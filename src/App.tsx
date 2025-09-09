@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { addTodos, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
@@ -22,7 +22,7 @@ export const App: React.FC = () => {
 
   const hideError = () => setError(null);
 
-  const loadTodos = () => {
+  const loadTodos = useCallback(() => {
     hideError();
     setIsLoading(true);
 
@@ -30,7 +30,7 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => showError('Unable to load todos'))
       .finally(() => setIsLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
     if (!USER_ID) {
@@ -38,7 +38,7 @@ export const App: React.FC = () => {
     }
 
     loadTodos();
-  }, []);
+  }, [loadTodos]);
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
