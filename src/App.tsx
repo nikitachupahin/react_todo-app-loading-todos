@@ -6,21 +6,22 @@ import { UserWarning } from './UserWarning';
 import { addTodos, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
+import { ErrorType } from './types/ErrorType';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>('');
+  const [error, setError] = useState<ErrorType>(ErrorType.DEFAULT_VALUE);
   const [filter, setFilter] = useState<Filter>('all');
   const [title, setTitle] = useState('');
   const [addingTodoId, setAddingTodoId] = useState<number | null>(null);
 
-  const showError = (message: string) => {
+  const showError = (message: ErrorType) => {
     setError(message);
-    setTimeout(() => setError(null), 3000);
+    setTimeout(() => setError(ErrorType.DEFAULT_VALUE), 3000);
   };
 
-  const hideError = () => setError(null);
+  const hideError = () => setError(ErrorType.DEFAULT_VALUE);
 
   const loadTodos = useCallback(() => {
     hideError();
@@ -28,7 +29,7 @@ export const App: React.FC = () => {
 
     getTodos()
       .then(setTodos)
-      .catch(() => showError('Unable to load todos'))
+      .catch(() => showError(ErrorType.LOAD_TODOS))
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -46,7 +47,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      showError('Title should not be empty');
+      showError(ErrorType.EMPTY_TITLE);
 
       return;
     }
@@ -71,7 +72,7 @@ export const App: React.FC = () => {
           prev.map(todo => (todo.id === tempId ? savedTodo : todo)),
         );
       })
-      .catch(() => showError('Unable to add a todo'))
+      .catch(() => showError(ErrorType.ADD_TODO))
       .finally(() => setAddingTodoId(null));
   };
 
